@@ -143,6 +143,9 @@ module Jekyll
       # sanitize url
       @url = url.split('/').reject{ |part| part =~ /^\.+$/ }.join('/')
       @url += "/" if url =~ /\/$/
+      if self.site.noslash and site.config['prewrite']
+        @url = @url + ".html"
+      end
       @url
     end
 
@@ -198,7 +201,14 @@ module Jekyll
     def destination(dest)
       # The url needs to be unescaped in order to preserve the correct filename
       path = File.join(dest, CGI.unescape(self.url))
-      path = File.join(path, "index.html") if template[/\.html$/].nil?
+      if self.site.noslash
+        # if noslash, need to make url into file rather than directory/index.html
+        # note that if also running with --prewrite the url will already have the .html
+        # ending so that local testing will work (nginx handles rewrite on server)
+        path = path + ".html" unless path.end_with?(".html")
+      else
+        path = File.join(path, "index.html") if template[/\.html$/].nil?
+      end
       path
     end
 
