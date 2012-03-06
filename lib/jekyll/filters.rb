@@ -43,6 +43,10 @@ module Jekyll
       date.strftime("%d %B %Y")
     end
 
+    def date_to_rfc2822(date)
+      date.rfc2822
+    end
+
     # Format a date for use in XML.
     #
     # date - The Time to format.
